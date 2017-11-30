@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Server {
 
-	public static final int SERVER_PORT = 9001;
+	public static final int SERVER_PORT = 9091;
 
 	private static ServerSocket sock;
 	private static List<ObjectOutputStream> clients = Collections.synchronizedList(new ArrayList<>());
@@ -20,16 +20,25 @@ public class Server {
 
 		while (true) {
 			// TODO 1: Accept a connection from the ServerSocket.
+			// Done
 			Socket s = null;
+			System.out.println("Preaccept");
+			s = sock.accept();
+			System.out.println("Post accept");
 
 			ObjectInputStream is = new ObjectInputStream(s.getInputStream());
 			ObjectOutputStream os = new ObjectOutputStream(s.getOutputStream());
 
 			// TODO 2: Save the output stream to our clients list so we can
 			// broadcast to this client later
+			// Done
+			clients.add(os);
 
 			// TODO 3: Start a new ClientHandler thread for this client.
-
+			// Done
+			ClientHandler clientHandler = new ClientHandler(is, clients);
+			clientHandler.start();
+			
 			System.out.println("Accepted a new connection from " + s.getInetAddress());
 		}
 	}

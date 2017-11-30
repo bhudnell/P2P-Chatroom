@@ -31,6 +31,8 @@ public class Client extends JFrame {
 	String username;
 	ObjectOutputStream oos;
 	ObjectInputStream ois;
+	public static final int SERVER_PORT = 9091;
+	
 
 	public Client(String username) throws UnknownHostException, IOException {
 		this.username = username;
@@ -41,11 +43,13 @@ public class Client extends JFrame {
 		field.addActionListener(new FieldListener());
 		
 		// TODO 7: Start a new ServerListener thread
+		ServerListener serverListener = new ServerListener();
+		serverListener.start();
 	}
 
 	private void setupModelAndLayout() {
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setSize(500, 600);
+		setSize(550, 600);
 		setLayout(new FlowLayout());
 
 		model = new DefaultListModel<String>();
@@ -65,7 +69,8 @@ public class Client extends JFrame {
 		/* Our server is on our computer, but make sure to use the same port. */
 		try {
 			// TODO 6: Connect to the Server
-
+			
+			Socket socket = new Socket("127.0.0.1", SERVER_PORT);
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			ois = new ObjectInputStream(socket.getInputStream());
 			model.addElement("Connected to server at " + ADDRESS + ":" + Server.SERVER_PORT);
