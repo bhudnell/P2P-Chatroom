@@ -16,11 +16,14 @@ public class Client {
 	private String IP;
 	private String name;
 	private boolean firstEntry = true;
-	private JTextField outgoing;
 	private ObjectOutputStream writer;
 	private ObjectInputStream inputFromServer;
 	private Socket socketServer;
 	public static String host = "localhost";
+	
+	public static void main(String [] args){
+		new Client();
+	}
 
 	public Client() {
 		chatView = new ChatClientGUI(this);
@@ -64,39 +67,19 @@ public class Client {
 		}
 	}
 
-	public class InputFieldListener implements ActionListener {
-		// Precondition: This client has successfully connected to
-		// a server and writer is a reference to the server's output stream.
-		public void actionPerformed(ActionEvent ev) {
-
-			try {
-				if (firstEntry) {
-					name = outgoing.getText();
-					firstEntry = false;
-					writer.writeObject(name + " has joined the chat");
-				} else
-					writer.writeObject(name + ": " + outgoing.getText());
-				writer.flush();
-			} catch (Exception ex) {
-			}
-			outgoing.setText("");
-			outgoing.requestFocus();
-		}
-	}
-
 	public void InputActionPerformed(ActionEvent ev) {
 		try {
 			if (firstEntry) {
-				name = outgoing.getText();
+				name = chatView.outgoing.getText();
 				firstEntry = false;
 				writer.writeObject(name + " has joined the chat");
 			} else
-				writer.writeObject(name + ": " + outgoing.getText());
+				writer.writeObject(name + ": " + chatView.outgoing.getText());
 			writer.flush();
 		} catch (Exception ex) {
 		}
-		outgoing.setText("");
-		outgoing.requestFocus();
+		chatView.outgoing.setText("");
+		chatView.requestFocus();
 		
 	}
 }

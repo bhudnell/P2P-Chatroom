@@ -17,7 +17,7 @@ public class ChatClientGUI extends JFrame {
 
 	private String name;
 	private boolean firstEntry = true;
-	private JTextField outgoing;
+	public JTextField outgoing;
 	private Client client;
 	public JTextArea inputFromServerTextArea;
 
