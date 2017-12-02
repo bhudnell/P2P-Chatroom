@@ -31,8 +31,8 @@ public class Client extends JFrame {
 	String username;
 	ObjectOutputStream oos;
 	ObjectInputStream ois;
+	JList<String> messages;
 	public static final int SERVER_PORT = 9091;
-	
 
 	public Client(String username) throws UnknownHostException, IOException {
 		this.username = username;
@@ -41,10 +41,11 @@ public class Client extends JFrame {
 		openConnection();
 
 		field.addActionListener(new FieldListener());
-		
-		// TODO 7: Start a new ServerListener thread
-		ServerListener serverListener = new ServerListener();
+
+		ServerHandler serverListener = new ServerHandler();
 		serverListener.start();
+		
+		serverListener.sendMessageToServer(oos,"we have connected to you!");
 	}
 
 	private void setupModelAndLayout() {
@@ -54,7 +55,7 @@ public class Client extends JFrame {
 
 		model = new DefaultListModel<String>();
 
-		JList<String> messages = new JList<>(model);
+		messages = new JList<>(model);
 		JScrollPane scroll = new JScrollPane(messages);
 		scroll.setPreferredSize(new Dimension(500, 500));
 		add(scroll);
@@ -66,14 +67,14 @@ public class Client extends JFrame {
 	}
 
 	private void openConnection() {
-		/* Our server is on our computer, but make sure to use the same port. */
 		try {
 			// TODO 6: Connect to the Server
-			
 			Socket socket = new Socket("127.0.0.1", SERVER_PORT);
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			ois = new ObjectInputStream(socket.getInputStream());
 			model.addElement("Connected to server at " + ADDRESS + ":" + Server.SERVER_PORT);
+			
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -82,17 +83,38 @@ public class Client extends JFrame {
 	private class FieldListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO 8: When the enter button is pressed, send the contents of the
+			// TODO 8: When the enter button is pressed, send the contents of
+			// the
 			// JTextField to the server (add the username for extra style!)
+
 		};
 	}
 
-	private class ServerListener extends Thread {
+	private class ServerHandler extends Thread {
 
 		@Override
 		public void run() {
 			// TODO 9: Repeatedly accept String objects from the server and add
 			// them to our model.
+			String currString = "";
+			while (true) {
+				try {
+					currString = ois.readUTF();
+					System.out.println(currString);
+					// model.addElement(currString);
+					// messages = new JList<String>(model);
+				} catch (IOException e) {
+				}
+			}
+		}
+
+		public void sendMessageToServer(ObjectOutputStream server, String string) {
+			try {
+				server.writeObject(string);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 }

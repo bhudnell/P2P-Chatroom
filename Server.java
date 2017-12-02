@@ -3,24 +3,29 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class Server {
+import javax.swing.JFrame;
+
+public class Server extends JFrame {
+
+	private static final long serialVersionUID = 1L;
 
 	public static final int SERVER_PORT = 9091;
 
 	private static ServerSocket sock;
-	private static List<ObjectOutputStream> clients = Collections.synchronizedList(new ArrayList<>());
+	private static Map<String, List<ClientStreams>> clientStreamsMap = new HashMap();
+	// Maps chatroom name to list of clients within said chatroom
 
 	public static void main(String[] args) throws IOException {
+
 		sock = new ServerSocket(SERVER_PORT);
+
 		System.out.println("Server started on port " + SERVER_PORT);
 
 		while (true) {
-			// TODO 1: Accept a connection from the ServerSocket.
-			// Done
 			Socket s = null;
 			System.out.println("Preaccept");
 			s = sock.accept();
@@ -29,47 +34,64 @@ public class Server {
 			ObjectInputStream is = new ObjectInputStream(s.getInputStream());
 			ObjectOutputStream os = new ObjectOutputStream(s.getOutputStream());
 
-			// TODO 2: Save the output stream to our clients list so we can
-			// broadcast to this client later
-			// Done
-			clients.add(os);
-
-			// TODO 3: Start a new ClientHandler thread for this client.
-			// Done
-			ClientHandler clientHandler = new ClientHandler(is, clients);
+			ClientHandler clientHandler = new ClientHandler(is);
 			clientHandler.start();
-			
+
 			System.out.println("Accepted a new connection from " + s.getInetAddress());
+			clientHandler.writeStringToClient(os, "New User Logged In\n");
 		}
+	}
+}
+
+class ClientStreams {
+	ObjectInputStream ois;
+	ObjectOutputStream oos;
+
+	public ClientStreams(ObjectInputStream ois, ObjectOutputStream oos) {
+		this.ois = ois;
+		this.oos = oos;
+	}
+
+	public ObjectInputStream getOis() {
+		return ois;
+	}
+
+	public ObjectOutputStream getOos() {
+		return oos;
 	}
 }
 
 class ClientHandler extends Thread {
 
 	ObjectInputStream input;
-	List<ObjectOutputStream> clients;
 
-	public ClientHandler(ObjectInputStream input, List<ObjectOutputStream> clients) {
+	public ClientHandler(ObjectInputStream input) {
 		this.input = input;
-		this.clients = clients;
 	}
 
 	@Override
 	public void run() {
+		String currString;
 		while (true) {
-
-			String s = null;
-
-			// TODO 4: Read a String from the client
-
-			writeStringToClients(s);
-
+			try {
+				currString = input.readUTF();
+				System.out.println(currString);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}
 
-	private void writeStringToClients(String s) {
+	public void writeStringToClient(ObjectOutputStream client, String s) {
 		// TODO 5: Send a string to all clients in the client list
+		try {
+			client.writeObject(s);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	// TODO (When you get the chance): Write a method that closes all the
