@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -20,8 +21,8 @@ public class Client {
 	private ObjectInputStream inputFromServer;
 	private Socket socketServer;
 	public static String host = "localhost";
-	
-	public static void main(String [] args){
+
+	public static void main(String[] args) {
 		new Client();
 	}
 
@@ -43,6 +44,7 @@ public class Client {
 		new Client();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void connectToSuperServer() {
 		try {
 			// host could be "localhost", port could be 4000
@@ -56,13 +58,14 @@ public class Client {
 			System.exit(0);
 		}
 
-		String message;
+		ArrayList<ChatRoom> chatRoomList;
 		try {
-			while (true) {
-				message = (String) inputFromServer.readObject();
-				chatView.inputFromServerTextArea.append(message + "\n");
+			chatRoomList = (ArrayList<ChatRoom>) inputFromServer.readObject();
+			for (ChatRoom room : chatRoomList) {
+				chatView.inputFromServerTextArea.append(room.getName() + "\n");
 			}
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			System.out.println("Client lost server");
 		}
 	}
@@ -80,6 +83,6 @@ public class Client {
 		}
 		chatView.outgoing.setText("");
 		chatView.requestFocus();
-		
+
 	}
 }

@@ -12,6 +12,7 @@ public class ChatRoom {
 	}
 
 	ArrayList<Client> activeUsers;
+	
 	public ChatRoom(String name){
 		this.name = name;
 		activeUsers = new ArrayList<Client>();
