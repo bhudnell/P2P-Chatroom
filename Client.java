@@ -64,7 +64,6 @@ public class Client {
 			for (ChatRoom room : chatRoomList) {
 				chatRoomView.inputFromServerTextArea.append(room.getName() + "\n");
 			}
-			System.out.println("Just got roomList from server");
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.out.println("Client lost server");
