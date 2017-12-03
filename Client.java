@@ -7,11 +7,11 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 
 public class Client {
 
 	private ChatClientGUI chatView;
+	private ChatRoomGUI chatRoomView;
 	private ChatServer server;
 	private String username;
 	private String IP;
@@ -27,7 +27,7 @@ public class Client {
 	}
 
 	public Client() {
-		chatView = new ChatClientGUI(this);
+		chatRoomView = new ChatRoomGUI(this);
 		server = new ChatServer();
 		connectToSuperServer();
 	}
@@ -62,8 +62,9 @@ public class Client {
 		try {
 			chatRoomList = (ArrayList<ChatRoom>) inputFromServer.readObject();
 			for (ChatRoom room : chatRoomList) {
-				chatView.inputFromServerTextArea.append(room.getName() + "\n");
+				chatRoomView.inputFromServerTextArea.append(room.getName() + "\n");
 			}
+			System.out.println("Just got roomList from server");
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.out.println("Client lost server");

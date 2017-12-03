@@ -17,6 +17,7 @@ public class SuperServer {
 	public SuperServer() {
 		clientOutputStreams = new ArrayList<ObjectOutputStream>();
 		roomList = new ArrayList<ChatRoom>();
+		roomList.add(new ChatRoom("Public Chat"));
 		try {
 			@SuppressWarnings("resource")
 			ServerSocket serverSock = new ServerSocket(PORT_NUMBER);

@@ -1,6 +1,11 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ChatRoom {
+public class ChatRoom implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	String name;
 	String password;
 	public String getName() {
