@@ -32,7 +32,7 @@ public class SuperServerListener implements Runnable {
 	@Override
 	public void run() {
 		ClientMessage clientMessage;
-		Client client;
+		String username;
 		String protocol;
 		String message;
 		try {
@@ -40,15 +40,20 @@ public class SuperServerListener implements Runnable {
 			while (true) {
 				// Wait for the client send a writeObject message to the server
 				clientMessage = (ClientMessage) ois.readObject();
-				client = clientMessage.getClient();
+				username = clientMessage.getUsername();
 				protocol = clientMessage.getProtocol();
 				message = clientMessage.getMessage();
 				if(protocol.contains("$JOIN$")){
 					// Client is requesting to join a chatroom
-					superServer.requestJoin(client,message);
+					superServer.requestJoin(username,protocol, message);
 				}
 				if(protocol.contains("$AUTH$")){
 					// Client is providing password to join a chatroom
+				}
+				if(protocol.contains("CREATE")){
+					// Client is creating a new Chat Room
+					superServer.createChatRoom(message);
+					System.out.println("Created chatroom");
 				}
 				
 			}

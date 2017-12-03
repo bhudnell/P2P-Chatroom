@@ -12,18 +12,19 @@ public class ChatRoom implements Serializable {
 	String name;
 	String password;
 	ArrayList<Client> activeUsers;
+
+	public ChatRoom(String name){
+		this.name = name;
+		activeUsers = new ArrayList<Client>();
+		password = "";
+	}
+	
 	public String getName() {
 		return name;
 	}
 
 	public ArrayList<Client> getActiveUsers() {
 		return activeUsers;
-	}
-	
-	public ChatRoom(String name){
-		this.name = name;
-		activeUsers = new ArrayList<Client>();
-		password = "";
 	}
 	
 	public void addClient(Client client){
@@ -40,6 +41,11 @@ public class ChatRoom implements Serializable {
 	
 	public boolean gainAccess(String password){
 		return this.password.equals(password);
+	}
+
+	public void addClient(String username, String ipAddress) {
+		System.out.println("Adding " + username + " and ip " + ipAddress + " to " + getName());
+		
 	}
 	
 }

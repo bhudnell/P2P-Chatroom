@@ -1,13 +1,17 @@
 package Tools;
+import java.io.Serializable;
+
 import Client.*;
 
-public class ClientMessage {
-	Client client;
+public class ClientMessage implements Serializable{
+
+	private static final long serialVersionUID = 1L;
+	String username;
 	String protocol;
 	String message;
 
-	public ClientMessage(Client client, String protocol, String message) {
-		this.client = client;
+	public ClientMessage(String username, String protocol, String message) {
+		this.username = username;
 		this.protocol = protocol;
 		this.message = message;
 	}
@@ -20,7 +24,7 @@ public class ClientMessage {
 		return message;
 	}
 
-	public Client getClient() {
-		return client;
+	public String getUsername() {
+		return username;
 	}
 }

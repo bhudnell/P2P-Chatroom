@@ -1,27 +1,31 @@
 package Client;
 
+import java.awt.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
 import SuperServer.ChatRoom;
+import SuperServer.SuperServerListener;
+import Tools.ClientMessage;
 
-public class Client {
-
+public class Client implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private ChatClientGUI chatView;
 	private ChatRoomGUI chatRoomView;
 	private ChatServer server;
 	private String name;
 	private String IP;
 	private boolean firstEntry = true;
-	private ObjectOutputStream writer;
-	private ObjectInputStream inputFromServer;
+	private transient ObjectOutputStream writer;
+	private transient ObjectInputStream inputFromServer;
 	private Socket socketServer;
 	public static String host = "localhost";
 	ArrayList<ChatRoom> chatRoomList;
@@ -71,10 +75,12 @@ public class Client {
 			ex.printStackTrace();
 			System.out.println("Client lost server");
 		}
+		Thread t = new Thread(new ClientListener(this, inputFromServer));
+		t.start();
 	}
 
-	public void sendMessageToSuperServer(String string) throws IOException {
-		writer.writeUTF(string);
+	public void sendMessageToSuperServer(ClientMessage clientMessage) throws IOException {
+		writer.writeObject(clientMessage);
 	}
 
 	public void InputActionPerformed(ActionEvent ev) {
@@ -86,28 +92,36 @@ public class Client {
 			} else
 				writer.writeObject(name + ": " + chatView.outgoing.getText());
 			writer.flush();
+			writer.reset();
 		} catch (Exception ex) {
 		}
 		chatView.outgoing.setText("");
 		chatView.requestFocus();
-
 	}
 
 	public void selectedChatRoomIndex(int index) throws IOException {
-		ChatRoom room;
+		ChatRoom room = null;
+		System.out.println("index = " + index);
 		if (index == -1 || index == 0) {
 			// Create a new chatroom
 			// JOptionPane newRoomName = new JOptionPane("Enter new chat room
 			// name");
 			String newName;
 			newName = JOptionPane.showInputDialog("Enter new chat room name");
-			room = new ChatRoom(newName);
+			sendMessageToSuperServer(new ClientMessage(name,"CREATE",newName));
 
 		} else {
-			room = chatRoomList.get(index);
+			room = chatRoomList.get(index-1);
+			sendMessageToSuperServer(new ClientMessage(name,"JOIN",room.getName()));
 		}
 		// System.out.println("Chosen chatroom's name is " + room.getName());
-		sendMessageToSuperServer("$Join$" + room.getName());
+		
+	}
+
+	public void updateGUI(ArrayList<ChatRoom> roomList) {
+		System.out.println("Updating gui with new roomList whose size is " + roomList.size());
+		this.chatRoomList = roomList;
+		chatRoomView.updateRoomList();
 	}
 
 }

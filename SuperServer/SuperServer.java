@@ -1,11 +1,13 @@
 package SuperServer;
 
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
 import Client.*;
+import Tools.ServerMessage;
 
 public class SuperServer {
 
@@ -21,8 +23,6 @@ public class SuperServer {
 	public SuperServer() {
 		clientOutputStreams = new ArrayList<ObjectOutputStream>();
 		roomList = new ArrayList<ChatRoom>();
-		roomList.add(new ChatRoom("Add new Chatroom"));
-		roomList.add(new ChatRoom("Public Chat 2"));
 		try {
 			@SuppressWarnings("resource")
 			ServerSocket serverSock = new ServerSocket(PORT_NUMBER);
@@ -41,7 +41,7 @@ public class SuperServer {
 		}
 	}
 
-	public void requestJoin(Client client, String roomName) {
+	public void requestJoin(String username, String ipAddress, String roomName) {
 		ChatRoom room = null;
 		for (ChatRoom currRoom : roomList) {
 			if (currRoom.getName().equals(roomName)) {
@@ -52,18 +52,43 @@ public class SuperServer {
 		// room is now set if found
 		if (room.gainAccess("")) {
 			// if there is no password, let user enter room
-			addClientToChatRoom(client, roomName);
+			addClientToChatRoom(username, ipAddress, roomName);
 		} else {
 			// need to ask user for a password, since there is one in place
 		}
 	}
 
-	private void addClientToChatRoom(Client client, String roomName) {
-		// need to setup adding a Client to a chatroom
+	private void addClientToChatRoom(String username, String ipAddress, String roomName) {
+		// need to setup adding a Client via ipAddress
 
-		// after adding a user to a chatroom, we can either leave list of
-		// chatrooms open and have that update consistently, or we can close
-		// chatroom list once client joins a chatroom
+		ChatRoom room = getChatRoom(roomName);
+		if (room == null)
+			return;
+		room.addClient(username, ipAddress);
+		
 
+		// after adding a user to a chatroom, we can leave list of
+		// chatrooms open and have that update consistently
+
+	}
+
+	public void createChatRoom(String message) {
+		roomList.add(new ChatRoom(message));
+		System.out.println("Roomlist size = " + roomList.size());
+		for (ObjectOutputStream oos : clientOutputStreams) {
+			try {
+				oos.writeObject(new ServerMessage("UPDATE", "", (ArrayList<ChatRoom>) roomList.clone()));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public ChatRoom getChatRoom(String roomName) {
+		for (ChatRoom room : roomList) {
+			if (room.getName().equals(roomName))
+				return room;
+		}
+		return null;
 	}
 }
