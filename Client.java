@@ -62,7 +62,7 @@ public class Client {
 		try {
 			chatRoomList = (ArrayList<ChatRoom>) inputFromServer.readObject();
 			for (ChatRoom room : chatRoomList) {
-				chatRoomView.inputFromServerTextArea.append(room.getName() + " : " + room.getActiveUsers().size() + " active users\n");
+				chatRoomView.model.addElement(room.getName() + " : " + room.getActiveUsers().size() + " active users\n");
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
