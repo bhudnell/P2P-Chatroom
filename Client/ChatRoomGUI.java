@@ -1,9 +1,11 @@
+package Client;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
@@ -14,14 +16,13 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class ChatRoomGUI extends JFrame {
-
-	private String name;
-	private boolean firstEntry = true;
+	private static final long serialVersionUID = 1L;
 	public JTextField outgoing;
 	private Client client;
 	public JTextArea inputFromServerTextArea;
-	public JList jList;
+	public JList<String> jList;
 	public DefaultListModel<String> model;
+	int index;
 
 	public ChatRoomGUI(Client client) {
 		this.client = client;
@@ -38,18 +39,26 @@ public class ChatRoomGUI extends JFrame {
 		cp.add(label);
 		
 		jList = new JList<String>(model);
+		model.addElement("Add new chat room");
 		jList.setSize(300, 20);
-		
+		index = -1;
 		jList.addMouseListener(new MouseAdapter() {
 		    public void mouseClicked(MouseEvent evt) {
-		        JList list = (JList)evt.getSource();
+		        JList<?> list = (JList)evt.getSource();
 		        if (evt.getClickCount() == 2) {
 		            // Double-click detected
-		            int index = list.locationToIndex(evt.getPoint());
+		            index = list.locationToIndex(evt.getPoint());
+		            try {
+						client.selectedChatRoomIndex(index);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 		        } else if (evt.getClickCount() == 3) {
 		            // Triple-click detected
-		            int index = list.locationToIndex(evt.getPoint());
+		            index = list.locationToIndex(evt.getPoint());
 		        }
+		        
 		    }
 		});
 		

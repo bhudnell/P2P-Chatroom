@@ -1,5 +1,8 @@
+package SuperServer;
 import java.io.Serializable;
 import java.util.ArrayList;
+
+import Client.Client;
 
 public class ChatRoom implements Serializable {
 	/**
@@ -8,6 +11,7 @@ public class ChatRoom implements Serializable {
 	private static final long serialVersionUID = 1L;
 	String name;
 	String password;
+	ArrayList<Client> activeUsers;
 	public String getName() {
 		return name;
 	}
@@ -15,12 +19,11 @@ public class ChatRoom implements Serializable {
 	public ArrayList<Client> getActiveUsers() {
 		return activeUsers;
 	}
-
-	ArrayList<Client> activeUsers;
 	
 	public ChatRoom(String name){
 		this.name = name;
 		activeUsers = new ArrayList<Client>();
+		password = "";
 	}
 	
 	public void addClient(Client client){

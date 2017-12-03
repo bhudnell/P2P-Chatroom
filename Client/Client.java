@@ -1,3 +1,5 @@
+package Client;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -8,19 +10,21 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
+import SuperServer.ChatRoom;
+
 public class Client {
 
 	private ChatClientGUI chatView;
 	private ChatRoomGUI chatRoomView;
 	private ChatServer server;
-	private String username;
-	private String IP;
 	private String name;
+	private String IP;
 	private boolean firstEntry = true;
 	private ObjectOutputStream writer;
 	private ObjectInputStream inputFromServer;
 	private Socket socketServer;
 	public static String host = "localhost";
+	ArrayList<ChatRoom> chatRoomList;
 
 	public static void main(String[] args) {
 		new Client();
@@ -47,7 +51,6 @@ public class Client {
 	@SuppressWarnings("unchecked")
 	public void connectToSuperServer() {
 		try {
-			// host could be "localhost", port could be 4000
 			socketServer = new Socket(host, ChatServer.PORT_NUMBER);
 			writer = new ObjectOutputStream(socketServer.getOutputStream());
 			inputFromServer = new ObjectInputStream(socketServer.getInputStream());
@@ -58,16 +61,20 @@ public class Client {
 			System.exit(0);
 		}
 
-		ArrayList<ChatRoom> chatRoomList;
 		try {
 			chatRoomList = (ArrayList<ChatRoom>) inputFromServer.readObject();
 			for (ChatRoom room : chatRoomList) {
-				chatRoomView.model.addElement(room.getName() + " : " + room.getActiveUsers().size() + " active users\n");
+				chatRoomView.model
+						.addElement(room.getName() + " : " + room.getActiveUsers().size() + " active users\n");
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			System.out.println("Client lost server");
 		}
+	}
+
+	public void sendMessageToSuperServer(String string) throws IOException {
+		writer.writeUTF(string);
 	}
 
 	public void InputActionPerformed(ActionEvent ev) {
@@ -85,4 +92,22 @@ public class Client {
 		chatView.requestFocus();
 
 	}
+
+	public void selectedChatRoomIndex(int index) throws IOException {
+		ChatRoom room;
+		if (index == -1 || index == 0) {
+			// Create a new chatroom
+			// JOptionPane newRoomName = new JOptionPane("Enter new chat room
+			// name");
+			String newName;
+			newName = JOptionPane.showInputDialog("Enter new chat room name");
+			room = new ChatRoom(newName);
+
+		} else {
+			room = chatRoomList.get(index);
+		}
+		// System.out.println("Chosen chatroom's name is " + room.getName());
+		sendMessageToSuperServer("$Join$" + room.getName());
+	}
+
 }

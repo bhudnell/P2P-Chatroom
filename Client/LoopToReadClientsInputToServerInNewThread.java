@@ -1,3 +1,4 @@
+package Client;
 
 /**
  * An instance of this class acts as the liaison between each client
