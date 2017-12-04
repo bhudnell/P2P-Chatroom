@@ -59,7 +59,22 @@ public class SuperServer {
 			// need to ask user for a password, since there is one in place
 		}
 		
-		// TODO: need to update that someone joined the room
+		for (ObjectOutputStream oos : clientOutputStreams) {
+			try {
+				int index = roomList.indexOf(room);
+				ArrayList<ChatRoom> list = (ArrayList<ChatRoom>) roomList.clone();
+				ChatRoom tempRoom = new ChatRoom(room.getName());
+				for (ClientInfo info : room.getActiveUsers()) {
+					tempRoom.addClient(new ClientInfo(info.getName(), info.getIP(), info.getPort()));
+				}
+				list.remove(index);
+				list.add(index, tempRoom);
+					
+				oos.writeObject(new ServerMessage("UPDATE", "", list));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private void addClientToChatRoom(ClientInfo client, String roomName) {

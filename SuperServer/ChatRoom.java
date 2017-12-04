@@ -29,9 +29,10 @@ public class ChatRoom implements Serializable {
 	
 	public void addClient(ClientInfo client){
 		activeUsers.add(client);
+		System.out.println("Adding " + client.getName() + " and ip " + client.getIP() + " to " + getName());
 	}
 	
-	public void removeClient(Client client){
+	public void removeClient(ClientInfo client){
 		activeUsers.remove(client);
 	}
 	

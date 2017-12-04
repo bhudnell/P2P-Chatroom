@@ -80,8 +80,7 @@ public class Client implements Serializable {
 		System.out.println("index = " + index);
 		if (index == -1 || index == 0) {
 			// Create a new chatroom
-			// JOptionPane newRoomName = new JOptionPane("Enter new chat room
-			// name");
+
 			String newName;
 			newName = JOptionPane.showInputDialog("Enter new chat room name");
 			if (newName != null)
@@ -95,15 +94,16 @@ public class Client implements Serializable {
 			
 			// if connection is allowed
 			// close chat list GUI and open chat client GUI
-			chatRoomView.close();
-			new ChatClientGUI(room);
+			Thread t = new Thread( new ChatClientGUI(this, room));
+			t.start();
 		}
 		// System.out.println("Chosen chatroom's name is " + room.getName());
 
 	}
 
 	public void updateGUI(ArrayList<ChatRoom> roomList) {
-		System.out.println("Updating gui with new roomList whose size is " + roomList.size());
+		//System.out.println("Updating gui with new roomList whose size is " + roomList.size());
+		//System.out.println("Updating gui with new roomList whose room size is " + roomList.get(0).getActiveUsers().size());
 		this.chatRoomList = roomList;
 		chatRoomView.updateRoomList();
 	}

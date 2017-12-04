@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -18,24 +20,27 @@ import javax.swing.JTextField;
 
 import SuperServer.ChatRoom;
 import SuperServer.ClientInfo;
+import Tools.ClientMessage;
 
-public class ChatClientGUI extends JFrame {
+public class ChatClientGUI extends JFrame implements Runnable {
 
 	private String name;
 	private boolean firstEntry = true;
 	public JTextField outgoing;
 	private ChatRoom room;
 	public JTextArea inputFromServerTextArea;
+	private transient ObjectOutputStream writer;
 	private transient ObjectInputStream inputFromServer;
 	private Socket socketServer;
-	private transient ArrayList<ObjectOutputStream> peerOutputStreams;
 	public static String host = "localhost";
 	private boolean isFirst;
+	private Client client;
 
-	public ChatClientGUI(ChatRoom room) {
+	public ChatClientGUI(Client client, ChatRoom room) {
+		this.client = client;
 		this.room = room;
-		isFirst = room.getActiveUsers().size() == 1;
-		setTitle("Chat Client");
+		isFirst = room.getActiveUsers().isEmpty();
+		setTitle("Room: " + room.getName());
 		setSize(380, 480);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Container cp = getContentPane();
@@ -54,7 +59,6 @@ public class ChatClientGUI extends JFrame {
 		scroller.setLocation(30, 40);
 		scroller.setBackground(Color.WHITE);
 		cp.add(scroller);
-
 		setVisible(true);
 		outgoing.requestFocus();
 		connectToPeers();
@@ -68,22 +72,14 @@ public class ChatClientGUI extends JFrame {
 		try {
 			// host could be "localhost", port could be 4000
 			socketServer = new Socket(host, ChatServer.PORT_NUMBER);
+			System.out.println("pre akdsjfhs");
+			writer = new ObjectOutputStream(socketServer.getOutputStream());
 			inputFromServer = new ObjectInputStream(socketServer.getInputStream());
-			System.out.println("Found server who accepted me");
+			System.out.println("Found client who accepted me");
 		} catch (IOException ex) {
 			JOptionPane.showMessageDialog(null,
 					"Could not find server at " + host + " on port " + ChatServer.PORT_NUMBER);
 			System.exit(0);
-		}
-
-		String message;
-		try {
-			while (true) {
-				message = (String) inputFromServer.readObject();
-				inputFromServerTextArea.append(message + "\n");
-			}
-		} catch (Exception ex) {
-			System.out.println("Client lost server");
 		}
 	}
 
@@ -96,18 +92,76 @@ public class ChatClientGUI extends JFrame {
 				if (firstEntry) {
 					name = outgoing.getText();
 					firstEntry = false;
-					for (ObjectOutputStream writer : peerOutputStreams)
-						writer.writeObject(name + " has joined the chat");
+					writer.writeObject(name + " has joined the chat");
 				} else {
-					for (ObjectOutputStream writer : peerOutputStreams)
-						writer.writeObject(name + ": " + outgoing.getText());
+					writer.writeObject(name + ": " + outgoing.getText());
 				}
-				for (ObjectOutputStream writer : peerOutputStreams)
-					writer.flush();
+				writer.flush();
 			} catch (Exception ex) {
 			}
 			outgoing.setText("");
 			outgoing.requestFocus();
+		}
+	}
+	
+	public class onCloseListener implements WindowListener {
+
+		@Override
+		public void windowActivated(WindowEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowClosed(WindowEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowClosing(WindowEvent arg0) {
+			try {
+				client.sendMessageToSuperServer(new ClientMessage(null, "EXIT", room.getName()));
+			} catch (IOException e) {
+			}
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowIconified(WindowEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowOpened(WindowEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
+
+	@Override
+	public void run() {
+		String message;
+		try {
+			while (true) {
+				message = (String) inputFromServer.readObject();
+				inputFromServerTextArea.append(message + "\n");
+			}
+		} catch (Exception ex) {
+			System.out.println("Client lost server");
 		}
 	}
 }

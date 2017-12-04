@@ -49,21 +49,14 @@ public class ChatRoomGUI extends JFrame {
 		index = -1;
 		jList.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
-				JList<?> list = (JList) evt.getSource();
+				JList<?> list = (JList<?>) evt.getSource();
 				if (evt.getClickCount() == 2) {
-					// Double-click detected
 					index = list.locationToIndex(evt.getPoint());
 					try {
 						client.selectedChatRoomIndex(index);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
 					}
-				} else if (evt.getClickCount() == 3) {
-					// Triple-click detected
-					index = list.locationToIndex(evt.getPoint());
-				}
-
+				} 
 			}
 		});
 
@@ -76,16 +69,8 @@ public class ChatRoomGUI extends JFrame {
 		cp.add(scroller);
 
 		setVisible(true);
-		// outgoing.requestFocus();
 	}
 
-	/*public class InputFieldListener implements ActionListener {
-		public void actionPerformed(ActionEvent ev) {
-			client.InputActionPerformed(ev);
-
-		}
-	}
-*/
 	public void updateRoomList() {
 		cp.removeAll();
 		cp.setLayout(null);
@@ -106,21 +91,14 @@ public class ChatRoomGUI extends JFrame {
 		index = -1;
 		jList.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent evt) {
-				JList<?> list = (JList) evt.getSource();
+				JList<?> list = (JList<?>) evt.getSource();
 				if (evt.getClickCount() == 2) {
-					// Double-click detected
 					index = list.locationToIndex(evt.getPoint());
 					try {
 						client.selectedChatRoomIndex(index);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
 					}
-				} else if (evt.getClickCount() == 3) {
-					// Triple-click detected
-					index = list.locationToIndex(evt.getPoint());
-				}
-
+				} 
 			}
 		});
 
@@ -133,10 +111,5 @@ public class ChatRoomGUI extends JFrame {
 		cp.add(scroller);
 
 		setVisible(true);
-		// outgoing.requestFocus();
-	}
-
-	public void close() {
-		this.dispose();
 	}
 }

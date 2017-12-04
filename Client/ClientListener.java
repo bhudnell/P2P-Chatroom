@@ -33,7 +33,7 @@ public class ClientListener implements Runnable {
 				System.out.println("Received message from server");
 				if (message.getProtocol().equals("UPDATE")) {
 					client.updateGUI(message.getRoomList());
-					System.out.println("Updating GUI");
+					System.out.println("Updating GUI aljkfghkljdf");
 				}
 			}
 		} catch (Exception ex) {
