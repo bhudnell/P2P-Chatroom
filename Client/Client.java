@@ -14,15 +14,13 @@ import javax.swing.JOptionPane;
 
 import SuperServer.ChatRoom;
 import SuperServer.ClientInfo;
-import SuperServer.SuperServerListener;
+import SuperServer.SuperServer;
 import Tools.ClientMessage;
 
 public class Client implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private ChatClientGUI chatView;
 	private ChatRoomGUI chatRoomView;
 	private String name;
-	private boolean firstEntry = true;
 	private transient ObjectOutputStream writer;
 	private transient ObjectInputStream inputFromServer;
 	private Socket socketServer;
@@ -46,20 +44,16 @@ public class Client implements Serializable {
 		this.name = name;
 	}
 
-	public static void main() {
-		new Client();
-	}
-
 	@SuppressWarnings("unchecked")
 	public void connectToSuperServer() {
 		try {
-			socketServer = new Socket(host, ChatServer.PORT_NUMBER);
+			socketServer = new Socket(host, SuperServer.PORT_NUMBER);
 			writer = new ObjectOutputStream(socketServer.getOutputStream());
 			inputFromServer = new ObjectInputStream(socketServer.getInputStream());
 			System.out.println("Found server who accepted me");
 		} catch (IOException ex) {
 			JOptionPane.showMessageDialog(null,
-					"Could not find server at " + host + " on port " + ChatServer.PORT_NUMBER);
+					"Could not find server at " + host + " on port " + SuperServer.PORT_NUMBER);
 			System.exit(0);
 		}
 
@@ -81,22 +75,6 @@ public class Client implements Serializable {
 		writer.writeObject(clientMessage);
 	}
 
-	/*public void InputActionPerformed(ActionEvent ev) {
-		try {
-			if (firstEntry) {
-				name = chatView.outgoing.getText();
-				firstEntry = false;
-				writer.writeObject(name + " has joined the chat");
-			} else
-				writer.writeObject(name + ": " + chatView.outgoing.getText());
-			writer.flush();
-			writer.reset();
-		} catch (Exception ex) {
-		}
-		chatView.outgoing.setText("");
-		chatView.requestFocus();
-	}*/
-
 	public void selectedChatRoomIndex(int index) throws IOException {
 		ChatRoom room = null;
 		System.out.println("index = " + index);
@@ -107,18 +85,18 @@ public class Client implements Serializable {
 			String newName;
 			newName = JOptionPane.showInputDialog("Enter new chat room name");
 			if (newName != null)
-				sendMessageToSuperServer(new ClientMessage(new ClientInfo(name, host, ChatServer.PORT_NUMBER), "CREATE", newName));
+				sendMessageToSuperServer(new ClientMessage(new ClientInfo(name, host, SuperServer.PORT_NUMBER), "CREATE", newName));
 		} else {
 			room = chatRoomList.get(index - 1);
-			sendMessageToSuperServer(new ClientMessage(new ClientInfo(name, host, ChatServer.PORT_NUMBER), "JOIN", room.getName()));
+			sendMessageToSuperServer(new ClientMessage(new ClientInfo(name, host, SuperServer.PORT_NUMBER), "JOIN", room.getName()));
 			
-			// connect to everyone in room
+			// TODO: check if can connect
 			
 			
-			
+			// if connection is allowed
 			// close chat list GUI and open chat client GUI
 			chatRoomView.close();
-			//chatView = new ChatClientGUI(this);
+			new ChatClientGUI(room);
 		}
 		// System.out.println("Chosen chatroom's name is " + room.getName());
 
