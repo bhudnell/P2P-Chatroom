@@ -11,11 +11,11 @@ public class ChatRoom implements Serializable {
 	private static final long serialVersionUID = 1L;
 	String name;
 	String password;
-	ArrayList<Client> activeUsers;
+	ArrayList<ClientInfo> activeUsers;
 
 	public ChatRoom(String name){
 		this.name = name;
-		activeUsers = new ArrayList<Client>();
+		activeUsers = new ArrayList<ClientInfo>();
 		password = "";
 	}
 	
@@ -23,11 +23,11 @@ public class ChatRoom implements Serializable {
 		return name;
 	}
 
-	public ArrayList<Client> getActiveUsers() {
+	public ArrayList<ClientInfo> getActiveUsers() {
 		return activeUsers;
 	}
 	
-	public void addClient(Client client){
+	public void addClient(ClientInfo client){
 		activeUsers.add(client);
 	}
 	

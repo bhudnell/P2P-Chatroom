@@ -2,16 +2,17 @@ package Tools;
 import java.io.Serializable;
 
 import Client.*;
+import SuperServer.ClientInfo;
 
 public class ClientMessage implements Serializable{
 
 	private static final long serialVersionUID = 1L;
-	String username;
+	ClientInfo client;
 	String protocol;
 	String message;
 
-	public ClientMessage(String username, String protocol, String message) {
-		this.username = username;
+	public ClientMessage(ClientInfo client, String protocol, String message) {
+		this.client = client;
 		this.protocol = protocol;
 		this.message = message;
 	}
@@ -24,7 +25,7 @@ public class ClientMessage implements Serializable{
 		return message;
 	}
 
-	public String getUsername() {
-		return username;
+	public ClientInfo getClient() {
+		return client;
 	}
 }

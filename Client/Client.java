@@ -13,30 +13,28 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 import SuperServer.ChatRoom;
+import SuperServer.ClientInfo;
 import SuperServer.SuperServerListener;
 import Tools.ClientMessage;
 
-public class Client implements Serializable{
+public class Client implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private ChatClientGUI chatView;
 	private ChatRoomGUI chatRoomView;
-	private ChatServer server;
 	private String name;
-	private String IP;
 	private boolean firstEntry = true;
 	private transient ObjectOutputStream writer;
 	private transient ObjectInputStream inputFromServer;
 	private Socket socketServer;
 	public static String host = "localhost";
 	ArrayList<ChatRoom> chatRoomList;
-
+	
 	public static void main(String[] args) {
 		new Client();
 	}
 
 	public Client() {
 		chatRoomView = new ChatRoomGUI(this);
-		server = new ChatServer();
 		connectToSuperServer();
 	}
 
@@ -83,7 +81,7 @@ public class Client implements Serializable{
 		writer.writeObject(clientMessage);
 	}
 
-	public void InputActionPerformed(ActionEvent ev) {
+	/*public void InputActionPerformed(ActionEvent ev) {
 		try {
 			if (firstEntry) {
 				name = chatView.outgoing.getText();
@@ -97,7 +95,7 @@ public class Client implements Serializable{
 		}
 		chatView.outgoing.setText("");
 		chatView.requestFocus();
-	}
+	}*/
 
 	public void selectedChatRoomIndex(int index) throws IOException {
 		ChatRoom room = null;
@@ -108,14 +106,22 @@ public class Client implements Serializable{
 			// name");
 			String newName;
 			newName = JOptionPane.showInputDialog("Enter new chat room name");
-			sendMessageToSuperServer(new ClientMessage(name,"CREATE",newName));
-
+			if (newName != null)
+				sendMessageToSuperServer(new ClientMessage(new ClientInfo(name, host, ChatServer.PORT_NUMBER), "CREATE", newName));
 		} else {
-			room = chatRoomList.get(index-1);
-			sendMessageToSuperServer(new ClientMessage(name,"JOIN",room.getName()));
+			room = chatRoomList.get(index - 1);
+			sendMessageToSuperServer(new ClientMessage(new ClientInfo(name, host, ChatServer.PORT_NUMBER), "JOIN", room.getName()));
+			
+			// connect to everyone in room
+			
+			
+			
+			// close chat list GUI and open chat client GUI
+			chatRoomView.close();
+			//chatView = new ChatClientGUI(this);
 		}
 		// System.out.println("Chosen chatroom's name is " + room.getName());
-		
+
 	}
 
 	public void updateGUI(ArrayList<ChatRoom> roomList) {

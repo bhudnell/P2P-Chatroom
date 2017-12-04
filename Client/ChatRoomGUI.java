@@ -79,13 +79,13 @@ public class ChatRoomGUI extends JFrame {
 		// outgoing.requestFocus();
 	}
 
-	public class InputFieldListener implements ActionListener {
+	/*public class InputFieldListener implements ActionListener {
 		public void actionPerformed(ActionEvent ev) {
 			client.InputActionPerformed(ev);
 
 		}
 	}
-
+*/
 	public void updateRoomList() {
 		cp.removeAll();
 		cp.setLayout(null);
@@ -134,5 +134,9 @@ public class ChatRoomGUI extends JFrame {
 
 		setVisible(true);
 		// outgoing.requestFocus();
+	}
+
+	public void close() {
+		this.dispose();
 	}
 }

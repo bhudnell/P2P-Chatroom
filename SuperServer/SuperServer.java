@@ -41,7 +41,8 @@ public class SuperServer {
 		}
 	}
 
-	public void requestJoin(String username, String ipAddress, String roomName) {
+	public void requestJoin(ClientInfo client, String roomName) {
+		System.out.println("attempting to join room: " + roomName);
 		ChatRoom room = null;
 		for (ChatRoom currRoom : roomList) {
 			if (currRoom.getName().equals(roomName)) {
@@ -52,19 +53,22 @@ public class SuperServer {
 		// room is now set if found
 		if (room.gainAccess("")) {
 			// if there is no password, let user enter room
-			addClientToChatRoom(username, ipAddress, roomName);
+			addClientToChatRoom(client, roomName);
+			System.out.println("added to room: " + roomName);
 		} else {
 			// need to ask user for a password, since there is one in place
 		}
+		
+		// TODO: need to update that someone joined the room
 	}
 
-	private void addClientToChatRoom(String username, String ipAddress, String roomName) {
+	private void addClientToChatRoom(ClientInfo client, String roomName) {
 		// need to setup adding a Client via ipAddress
 
 		ChatRoom room = getChatRoom(roomName);
 		if (room == null)
 			return;
-		room.addClient(username, ipAddress);
+		room.addClient(client);
 		
 
 		// after adding a user to a chatroom, we can leave list of
