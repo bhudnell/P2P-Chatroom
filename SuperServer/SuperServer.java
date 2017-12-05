@@ -96,9 +96,21 @@ public class SuperServer {
 		roomList.add(new ChatRoom(message));
 		System.out.println("Roomlist size = " + roomList.size());
 		for (ObjectOutputStream oos : clientOutputStreams) {
+			ArrayList<ChatRoom> list = (ArrayList<ChatRoom>) roomList.clone();
+			for (ChatRoom curr : roomList) {
+				int index = roomList.indexOf(curr);
+				ChatRoom tempRoom = new ChatRoom(curr.getName());
+				for (ClientInfo info : curr.getActiveUsers()) {
+					tempRoom.addClient(new ClientInfo(info.getName(), info.getIP(), info.getPort()));
+				}
+				list.remove(index);
+				list.add(index, tempRoom);
+			}
+
 			try {
-				oos.writeObject(new ServerMessage("UPDATE", "", (ArrayList<ChatRoom>) roomList.clone()));
+				oos.writeObject(new ServerMessage("UPDATE", "", list));
 			} catch (IOException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
