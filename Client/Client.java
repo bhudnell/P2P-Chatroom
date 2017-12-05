@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.Inet4Address;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
@@ -24,14 +26,15 @@ public class Client implements Serializable {
 	private transient ObjectOutputStream writer;
 	private transient ObjectInputStream inputFromServer;
 	private Socket socketServer;
-	public static String host = "localhost";
+	public static String host;
 	ArrayList<ChatRoom> chatRoomList;
-	
+
 	public static void main(String[] args) {
 		new Client();
 	}
 
 	public Client() {
+		host = "localhost";
 		chatRoomView = new ChatRoomGUI(this);
 		connectToSuperServer();
 	}
@@ -84,17 +87,18 @@ public class Client implements Serializable {
 			String newName;
 			newName = JOptionPane.showInputDialog("Enter new chat room name");
 			if (newName != null)
-				sendMessageToSuperServer(new ClientMessage(new ClientInfo(name, host, SuperServer.PORT_NUMBER), "CREATE", newName));
+				sendMessageToSuperServer(
+						new ClientMessage(new ClientInfo(name, host, SuperServer.PORT_NUMBER), "CREATE", newName));
 		} else {
 			room = chatRoomList.get(index - 1);
-			sendMessageToSuperServer(new ClientMessage(new ClientInfo(name, host, SuperServer.PORT_NUMBER), "JOIN", room.getName()));
-			
+			sendMessageToSuperServer(
+					new ClientMessage(new ClientInfo(name, host, SuperServer.PORT_NUMBER), "JOIN", room.getName()));
+
 			// TODO: check if can connect
-			
-			
+
 			// if connection is allowed
 			// close chat list GUI and open chat client GUI
-			Thread t = new Thread( new ChatClientGUI(this, room));
+			Thread t = new Thread(new ChatClientGUI(this, room));
 			t.start();
 		}
 		// System.out.println("Chosen chatroom's name is " + room.getName());
@@ -102,8 +106,10 @@ public class Client implements Serializable {
 	}
 
 	public void updateGUI(ArrayList<ChatRoom> roomList) {
-		//System.out.println("Updating gui with new roomList whose size is " + roomList.size());
-		//System.out.println("Updating gui with new roomList whose room size is " + roomList.get(0).getActiveUsers().size());
+		// System.out.println("Updating gui with new roomList whose size is " +
+		// roomList.size());
+		// System.out.println("Updating gui with new roomList whose room size is
+		// " + roomList.get(0).getActiveUsers().size());
 		this.chatRoomList = roomList;
 		chatRoomView.updateRoomList();
 	}

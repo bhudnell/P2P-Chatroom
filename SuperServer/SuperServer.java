@@ -58,18 +58,20 @@ public class SuperServer {
 		} else {
 			// need to ask user for a password, since there is one in place
 		}
-		
+
 		for (ObjectOutputStream oos : clientOutputStreams) {
 			try {
-				int index = roomList.indexOf(room);
 				ArrayList<ChatRoom> list = (ArrayList<ChatRoom>) roomList.clone();
-				ChatRoom tempRoom = new ChatRoom(room.getName());
-				for (ClientInfo info : room.getActiveUsers()) {
-					tempRoom.addClient(new ClientInfo(info.getName(), info.getIP(), info.getPort()));
+				for (ChatRoom curr : roomList) {
+					int index = roomList.indexOf(curr);
+					ChatRoom tempRoom = new ChatRoom(curr.getName());
+					for (ClientInfo info : curr.getActiveUsers()) {
+						tempRoom.addClient(new ClientInfo(info.getName(), info.getIP(), info.getPort()));
+					}
+					list.remove(index);
+					list.add(index, tempRoom);
 				}
-				list.remove(index);
-				list.add(index, tempRoom);
-					
+
 				oos.writeObject(new ServerMessage("UPDATE", "", list));
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -84,7 +86,6 @@ public class SuperServer {
 		if (room == null)
 			return;
 		room.addClient(client);
-		
 
 		// after adding a user to a chatroom, we can leave list of
 		// chatrooms open and have that update consistently

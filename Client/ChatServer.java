@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class ChatServer implements Runnable {
 
-	public static int PORT_NUMBER = 4005;
+	public static int PORT_NUMBER = 4006;
 
 	public static void main(String[] args) {
 		new ChatServer();
