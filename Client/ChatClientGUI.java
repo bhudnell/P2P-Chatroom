@@ -42,7 +42,7 @@ public class ChatClientGUI extends JFrame implements Runnable {
 		isFirst = room.getActiveUsers().isEmpty();
 		setTitle("Room: " + room.getName());
 		setSize(380, 480);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		Container cp = getContentPane();
 		cp.setLayout(null);
 
@@ -54,6 +54,7 @@ public class ChatClientGUI extends JFrame implements Runnable {
 		cp.add(outgoing);
 
 		inputFromServerTextArea = new JTextArea();
+		inputFromServerTextArea.setEditable(false);
 
 		JScrollPane scroller = new JScrollPane(inputFromServerTextArea);
 		scroller.setSize(300, 400);
@@ -115,47 +116,34 @@ public class ChatClientGUI extends JFrame implements Runnable {
 
 		@Override
 		public void windowActivated(WindowEvent arg0) {
-			// TODO Auto-generated method stub
-			
+		}
+		@Override
+		public void windowClosed(WindowEvent arg0) {
 		}
 
 		@Override
-		public void windowClosed(WindowEvent arg0) {
+		public void windowClosing(WindowEvent arg0) {	
+			System.out.println("Closing chat client");
 			try {
 				client.sendMessageToSuperServer(new ClientMessage(null, "EXIT", room.getName()));
+				System.out.println("Sent refresh message");
 				frame.dispose();
 			} catch (IOException e) {
 			}
 		}
 
 		@Override
-		public void windowClosing(WindowEvent arg0) {			
-		}
-
-		@Override
 		public void windowDeactivated(WindowEvent arg0) {
-			// TODO Auto-generated method stub
-			
 		}
-
 		@Override
 		public void windowDeiconified(WindowEvent arg0) {
-			// TODO Auto-generated method stub
-			
 		}
-
 		@Override
 		public void windowIconified(WindowEvent arg0) {
-			// TODO Auto-generated method stub
-			
 		}
-
 		@Override
 		public void windowOpened(WindowEvent arg0) {
-			// TODO Auto-generated method stub
-			
-		}
-		
+		}		
 	}
 
 	@Override
