@@ -56,7 +56,7 @@ public class SuperServerListener implements Runnable {
 					System.out.println("Created chatroom");
 				}
 				if (protocol.contains("EXIT")){
-					// TODO: implent update roomlisdt when client leaves room
+					superServer.clientLeftRoom(client, message);
 				}
 				
 			}

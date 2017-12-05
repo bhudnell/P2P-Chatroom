@@ -48,6 +48,7 @@ public class ChatClientGUI extends JFrame implements Runnable {
 
 		outgoing = new JTextField("Replace me with your name");
 		outgoing.addActionListener(new InputFieldListener());
+		this.addWindowListener(new onCloseListener(this));
 		outgoing.setSize(300, 20);
 		outgoing.setLocation(30, 10);
 		cp.add(outgoing);
@@ -105,6 +106,12 @@ public class ChatClientGUI extends JFrame implements Runnable {
 	}
 	
 	public class onCloseListener implements WindowListener {
+		
+		private JFrame frame;
+		
+		public onCloseListener(JFrame frame) {
+			this.frame = frame;
+		}
 
 		@Override
 		public void windowActivated(WindowEvent arg0) {
@@ -114,16 +121,15 @@ public class ChatClientGUI extends JFrame implements Runnable {
 
 		@Override
 		public void windowClosed(WindowEvent arg0) {
-			// TODO Auto-generated method stub
-			
+			try {
+				client.sendMessageToSuperServer(new ClientMessage(null, "EXIT", room.getName()));
+				frame.dispose();
+			} catch (IOException e) {
+			}
 		}
 
 		@Override
-		public void windowClosing(WindowEvent arg0) {
-			try {
-				client.sendMessageToSuperServer(new ClientMessage(null, "EXIT", room.getName()));
-			} catch (IOException e) {
-			}
+		public void windowClosing(WindowEvent arg0) {			
 		}
 
 		@Override

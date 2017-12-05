@@ -123,4 +123,30 @@ public class SuperServer {
 		}
 		return null;
 	}
+
+	public void clientLeftRoom(ClientInfo client, String message) {
+		ChatRoom room = getChatRoom(message);
+		if (room == null)
+			return;
+		room.removeClient(client.getName());
+		
+		for (ObjectOutputStream oos : clientOutputStreams) {
+			try {
+				ArrayList<ChatRoom> list = (ArrayList<ChatRoom>) roomList.clone();
+				for (ChatRoom curr : roomList) {
+					int index = roomList.indexOf(curr);
+					ChatRoom tempRoom = new ChatRoom(curr.getName());
+					for (ClientInfo info : curr.getActiveUsers()) {
+						tempRoom.addClient(new ClientInfo(info.getName(), info.getIP(), info.getPort()));
+					}
+					list.remove(index);
+					list.add(index, tempRoom);
+				}
+
+				oos.writeObject(new ServerMessage("UPDATE", "", list));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }

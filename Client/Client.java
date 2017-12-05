@@ -36,6 +36,7 @@ public class Client implements Serializable {
 
 	public Client() {
 		host = "localhost";
+		name = JOptionPane.showInputDialog("Enter your name:");
 		chatRoomView = new ChatRoomGUI(this);
 		connectToSuperServer();
 	}

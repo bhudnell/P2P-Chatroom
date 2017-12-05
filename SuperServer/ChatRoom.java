@@ -36,6 +36,13 @@ public class ChatRoom implements Serializable {
 		activeUsers.remove(client);
 	}
 	
+	public void removeClient(String name) {
+		for (ClientInfo client:activeUsers){
+			if (client.getName().equals(name))
+				activeUsers.remove(client);
+		}
+	}
+	
 	public void setPassword(String password){
 		this.password = password;
 	}
