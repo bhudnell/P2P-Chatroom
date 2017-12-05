@@ -22,6 +22,7 @@ import Tools.ClientMessage;
 public class Client implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private ChatRoomGUI chatRoomView;
+	private ChatClientGUI chatClientView;
 	private String name;
 	private transient ObjectOutputStream writer;
 	private transient ObjectInputStream inputFromServer;
@@ -98,7 +99,7 @@ public class Client implements Serializable {
 
 			// if connection is allowed
 			// close chat list GUI and open chat client GUI
-			Thread t = new Thread(new ChatClientGUI(this, room));
+			Thread t = new Thread(chatClientView = new ChatClientGUI(this, room));
 			t.start();
 		}
 		// System.out.println("Chosen chatroom's name is " + room.getName());
